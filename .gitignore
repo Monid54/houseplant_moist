@@ -1,0 +1,19 @@
+# Secrets
+secrets.h
+**/secrets.h
+*.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+backend/.venv/
+
+# SQLite DB (nie committen)
+backend/plant.db
+*.db
+*.sqlite
+*.sqlite3
+
+# OS
+.DS_Store
