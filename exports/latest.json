@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated_at": "2026-02-22T17:48:46.188436+00:00",
-    "latest_days": 14,
-    "count": 24833
+    "generated_at": "2026-02-22T17:53:18.709080+00:00",
+    "latest_days": 7,
+    "count": 24834
   },
   "readings": [
     {
@@ -198665,6 +198665,14 @@
       "sensor_id": "plant1",
       "ts": "2026-02-22T17:44:11.066399+00:00",
       "raw": 633,
+      "moisture": 100,
+      "vcc": null,
+      "rssi": -65
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-02-22T17:49:11.215970+00:00",
+      "raw": 635,
       "moisture": 100,
       "vcc": null,
       "rssi": -65

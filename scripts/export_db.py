@@ -4,10 +4,10 @@ from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
 ROOT = Path(__file__).resolve().parents[1]
-DB_PATH = Path("/home/pi/plant-backend/plant.db")  # Quelle: echte DB
+DB_PATH = Path("/home/pi/plant-backend/plant.db")
 EXPORTS = ROOT / "exports"
 DAILY = EXPORTS / "daily"
-LATEST_DAYS = 14  # für Team-Dev handlich (anpassen)
+LATEST_DAYS = 7
 
 def main():
     if not DB_PATH.exists():
