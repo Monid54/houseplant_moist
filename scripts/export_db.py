@@ -3,12 +3,22 @@ import json, sqlite3
 from pathlib import Path
 from datetime import datetime, timezone, timedelta
 
+"""
+This script exports the sensor readings from the SQLite database into JSON files.
+It creates two types of exports:
+1. latest.json: Contains the latest readings from the last 14 days, aggregated into hourly buckets for recent data and 6-hourly buckets for older data.
+2. daily/YYYY-MM-DD.json: Contains all readings for the current day.
+The exports are saved in the "exports" directory, with daily exports in a "daily" subdirectory.
+"""
+
+# Define paths and constants
 ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = Path("/home/pi/plant-backend/plant.db")
 EXPORTS = ROOT / "exports"
 DAILY = EXPORTS / "daily"
 LATEST_DAYS = 14
 
+# The main function performs the export process.
 def main():
     if not DB_PATH.exists():
         raise SystemExit(f"DB not found: {DB_PATH}")
@@ -28,7 +38,7 @@ def main():
         (cutoff,),
     ).fetchall()
 
-    # Aggregate data: hourly for last 7 days, 6-hourly for older data
+    # Aggregate data: hourly for last 14 days, 6-hourly for older data
     aggregated = {}
     for row in latest:
         row_dict = dict(row)
@@ -81,6 +91,6 @@ def main():
     }, ensure_ascii=False, indent=2))
 
     print(f"Exported latest={len(latest)} daily={len(daily)}")
-
+# The init_db function initializes the database by creating the readings table if it doesn't exist and adding an index for efficient querying.
 if __name__ == "__main__":
     main()
