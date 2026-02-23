@@ -21,7 +21,7 @@ ESP32 Sensor -> HTTP POST -> Raspberry Pi (FastAPI)
 --------------------------------------------------
 Live Data
 --------------------------------------------------
-Latest measurements (last 7 days):
+Latest measurements (last 14 days) in hourly buckets, and older measurements in 6-houre buckets:
 exports/latest.json
 
 Daily snapshots:
@@ -44,7 +44,7 @@ Hardware
 - Capacitive soil moisture sensor
 - USB powered
 
-Sampling interval: 5 minutes
+Sampling interval: 15 minutes
 
 --------------------------------------------------
 Backend API
@@ -86,7 +86,7 @@ sensor_id   Sensor identifier
 ts          ISO8601 timestamp (UTC)
 raw         Raw ADC value
 moisture    Calibrated percentage
-vcc         Supply voltage (optional)
+vcc         Supply voltage (for battery)
 rssi        WiFi signal strength
 
 --------------------------------------------------
