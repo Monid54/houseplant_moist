@@ -10,7 +10,7 @@ const char* sensorId = "plant1";
 
 #define SENSOR_PIN 3   // dein ADC Pin (GPIO4)
 
-static const uint32_t INTERVAL_MS = 300000; // 300s = 5min
+static const uint32_t INTERVAL_MS = 900000; // 900s = 15min
 
 int readAveraged(int pin, int samples = 12) {
   long sum = 0;
