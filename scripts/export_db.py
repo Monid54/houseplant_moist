@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = Path("/home/pi/plant-backend/plant.db")
 EXPORTS = ROOT / "exports"
 DAILY = EXPORTS / "daily"
-LATEST_DAYS = 7
+LATEST_DAYS = 14
 
 def main():
     if not DB_PATH.exists():
@@ -27,6 +27,38 @@ def main():
         "WHERE ts >= ? ORDER BY ts ASC",
         (cutoff,),
     ).fetchall()
+
+    # Aggregate data: hourly for last 7 days, 6-hourly for older data
+    aggregated = {}
+    for row in latest:
+        row_dict = dict(row)
+        ts = datetime.fromisoformat(row_dict['ts'])
+        
+        if ts >= (now - timedelta(days=LATEST_DAYS)):
+            # Hourly buckets for recent data
+            bucket = ts.replace(minute=0, second=0, microsecond=0).isoformat()
+        else:
+            # 6-hourly buckets for older data
+            hour_bucket = (ts.hour // 6) * 6
+            bucket = ts.replace(hour=hour_bucket, minute=0, second=0, microsecond=0).isoformat()
+        
+        key = (row_dict['sensor_id'], bucket)
+        if key not in aggregated:
+            aggregated[key] = []
+        aggregated[key].append(row_dict)
+    
+    # Average values per bucket
+    latest = []
+    for (sensor_id, bucket), rows in aggregated.items():
+        avg = {
+            'sensor_id': sensor_id,
+            'ts': bucket,
+            'raw': sum(r['raw'] for r in rows) / len(rows),
+            'moisture': sum(r['moisture'] for r in rows) / len(rows),
+            'vcc': sum(r['vcc'] for r in rows) / len(rows),
+            'rssi': sum(r['rssi'] for r in rows) / len(rows),
+        }
+        latest.append(avg)
 
     (EXPORTS / "latest.json").write_text(json.dumps({
         "meta": {"generated_at": now.isoformat(), "latest_days": LATEST_DAYS, "count": len(latest)},
