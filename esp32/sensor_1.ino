@@ -8,7 +8,7 @@ const int port = 8080;
 
 const char* sensorId = "plant1";
 
-#define SENSOR_PIN 3   // dein ADC Pin (GPIO4)
+#define SENSOR_PIN 3   // ADC-Pin for moisture sensor (0..4095)
 
 static const uint32_t INTERVAL_MS = 900000; // 900s = 15min
 
@@ -21,7 +21,7 @@ int readAveraged(int pin, int samples = 12) {
   return (int)(sum / samples);
 }
 
-// Kalibrierwerte
+// Calibration: 390 = dry, 630 = moist (values depend on your sensor and soil!)
 int toPercent(int raw, int dry = 390, int wet = 630) {
   int pct = map(raw, dry, wet, 0, 100);
   if (pct < 0) pct = 0;
@@ -29,6 +29,9 @@ int toPercent(int raw, int dry = 390, int wet = 630) {
   return pct;
 }
 
+// Build the URL for the POST request.
+// It first tries to resolve the host name using mDNS, and if that fails, it falls back to a hardcoded IP address.
+// The IP address demends on your local network setup and the device running the backend service.
 String buildUrl() {
   if (hostIpFallback && strlen(hostIpFallback) > 0) {
     return "http://" + String(hostIpFallback) + ":" + String(port) + "/ingest";
@@ -40,6 +43,7 @@ String buildUrl() {
   return "";
 }
 
+// This function sends a POST request with a JSON payload to the specified URL.
 bool postJson(const String& url, const String& payload) {
   HTTPClient http;
   http.setTimeout(6000);
@@ -58,6 +62,8 @@ bool postJson(const String& url, const String& payload) {
   return (code >= 200 && code < 300);
 }
 
+// This function ensures that the device is connected to WiFi.
+// If it's not connected, it attempts to connect using the provided SSID and password.
 void ensureWiFi() {
   if (WiFi.status() == WL_CONNECTED) return;
 
@@ -79,6 +85,10 @@ void ensureWiFi() {
   }
 }
 
+// The setup function initializes the serial communication,
+// configures the ADC resolution,
+// sets the sensor pin as input,
+// and ensures that the device is connected to WiFi.
 void setup() {
   Serial.begin(115200);
   delay(200);
@@ -90,11 +100,12 @@ void setup() {
   WiFi.setAutoReconnect(true);
   WiFi.persistent(false);
 
-  ensureWiFi();   // dein bestehender Connect-Code
+  ensureWiFi();   // Start with WiFi connection, but continue even if it fails (will retry in loop)
 }
 
 void loop() {
-  // WLAN sicherstellen
+  // Wifi-Check and reconnect if needed.
+  // We want to avoid sending data if we are not connected, but also don't want to block the loop for too long if WiFi is down.
   ensureWiFi();
 
   if (WiFi.status() != WL_CONNECTED) {
@@ -114,14 +125,14 @@ void loop() {
     return;
   }
 
-  // JSON bauen
+  // build JSON payload manually to avoid adding ArduinoJson dependency
   String payload = String("{\"sensor_id\":\"") + sensorId +
                    String("\",\"raw\":") + raw +
                    String(",\"moisture\":") + moisture +
                    String(",\"rssi\":") + WiFi.RSSI() +
                    String("}");
 
-  // Retry (wichtig für WLAN-Drops)
+  // Retry (important if Wifi is flaky or backend is temporarily unavailable), but don't block the loop for too long.
   bool ok = false;
   for (int i = 0; i < 3 && !ok; i++) {
     ok = postJson(url, payload);
