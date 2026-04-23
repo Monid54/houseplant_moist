@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Account - Plant care </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  
+  <!-- Main CSS -->
+  
+  <link rel="stylesheet" href="style.css" />  
+</head>
+
+
+<body>
+  <div class="auth-page">
+  
+    <div class="auth-right">
+
+      <img src="images/plantcare.png" alt="plant care logo" class="logo" />
+
+
+      <h3>Secure your plantcare account</h3>
+
+      <p>
+        You're unlocking access to powerful tools, real time insights, and personalized support.
+      </p>
+      
+      <h4>Create a secure login to monitor your plants health </h4>
+      
+      <img src="images/password_03.png" alt="illustration" class="illustration" />
+    </div>
+
+    <!-- LEFT PANEL -->
+    <div class="auth-left">
+        
+       <form  method="POST" action="/create_account" class="auth-form">
+        
+        <h2>Account security</h2>
+
+      
+
+        <!-- Form fields -->
+        <div class="input-group">
+          <input type="email" name="email" placeholder="Email" required />
+        </div>
+
+        
+      
+  
+        <div class="input-group password-group">
+  <input type="password" name="password" placeholder="Password*" required>
+
+  <span class="toggle-password" onclick="togglePassword(this)">
+    <img src="https://img.icons8.com/?size=100&id=34226&format=png&color=737373">
+  </span>
+</div>
+
+<div class="input-group password-group">
+  <input type="password" name="confirm-password" placeholder="Confirm password*" required>
+
+  <span class="toggle-password" onclick="togglePassword(this)">
+    <img src="https://img.icons8.com/?size=100&id=34226&format=png&color=737373">
+  </span>
+</div>
+
+        
+
+   <div class="form-options">
+      <label class="remember-left">
+        <input type="checkbox" name="remember"><span> I have reviewed and I accept the</span>
+      </label>
+
+      <a href="#" class="forgot-link">Terms of use</a>
+    </div>
+
+
+        <div class="form-actions">
+          <a href="/signup/step2" class="btn btn-secondary">← Previous</a>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
+        </div>
+      </form>
+    </div>
+  
+  
+  
+  
+ <script src="main.js" defer></script>
+  
+  
+  
+</body>
+</html>
+
+

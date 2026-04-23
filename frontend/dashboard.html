@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>PlantCare Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #f5f5f5;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 420px;
+  margin: auto;
+  padding: 30px 20px;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.location {
+  color: gray;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+#greeting {
+  color: #333;
+}
+
+
+.graph-title {
+  color: #353836;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+}
+
+.dark .graph-title {
+  color: #4CAF50; /* lighter green for dark mode */
+}
+
+
+
+/* TOGGLE */
+.toggle {
+  width: 50px;
+  height: 25px;
+  background: #ddd;
+  border-radius: 25px;
+  position: relative;
+  cursor: pointer;
+}
+
+.toggle::before {
+  content: "";
+  width: 20px;
+  height: 20px;
+  background: white;
+  position: absolute;
+  top: 2.5px;
+  left: 3px;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.dark .toggle::before {
+  transform: translateX(24px);
+}
+
+/* HAMBURGER */
+.hamburger {
+  font-size: 18px;
+  border: none;
+  background: #078311;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: none;
+}
+
+/* SIDE MENU */
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -300px;
+  width: 200px;
+  height: 100%;
+  background: #078311;
+  padding: 20px;
+  transition: left 0.3s ease;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+
+.side-menu img {
+  width: 200px;
+  height: auto;
+  margin: 0 auto 10px;
+  display: block;
+  margin-bottom: -30px;
+}
+
+.side-menu a {
+  color: white;
+  text-decoration: none;
+  margin: 12px 0;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.side-menu a i {
+  margin-right: 10px;
+}
+
+.side-menu a:hover {
+  opacity: 0.8;
+}
+
+.side-menu.active {
+  left: 0;
+}
+
+/* OVERLAY */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.3);
+  display: none;
+  z-index: 998;
+}
+
+.overlay.active {
+  display: block;
+}
+
+/* LIST */
+.plant-list {
+  margin-top: 20px;
+}
+
+.plant-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.plant-row:last-child {
+  border-bottom: none;
+}
+
+.plant-row span:first-child {
+  font-weight: 500;
+  flex: 1;
+}
+
+/* STATUS */
+.status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.warning { background: #f5cba7; color: #a04000; }
+.normal { background: #a9dfbf; color: #145a32; }
+.critical { background: #f1948a; color: #7b241c; }
+
+/* CARD */
+.card {
+  margin-top: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  max-width: 700px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.big {
+  font-size: 40px;
+  margin: 10px 0;
+}
+
+.divider {
+  height: 1px;
+  background: #eee;
+  margin: 15px 0;
+}
+
+.grid {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* GRAPH */
+.graph {
+  margin-top: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  max-width: 700px;
+}
+
+.graph img {
+  width: 100%;
+}
+
+/* DARK MODE */
+.dark {
+  background: #111;
+  color: white;
+}
+
+.dark .card,
+.dark .graph {
+  background: #1a1a1a;
+}
+
+.dark .side-menu {
+  background: #1a1a1a;
+}
+
+/* ===== DESKTOP ===== */
+@media (min-width: 769px) {
+
+  .side-menu {
+    left: 0;
+  }
+
+  .overlay {
+    display: none !important;
+  }
+
+  .hamburger {
+    display: none;
+  }
+
+  .container {
+    margin-left: 240px;
+    max-width: 1000px;
+  }
+
+}
+
+
+#waterChart {
+  width: 100%;
+  height: 250px;
+}
+
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meta-info {
+  font-size: 13px;
+  color: gray;
+  font-weight: 500;
+}
+
+.dark .meta-info {
+  color: #bbb;
+}
+
+
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+
+  .hamburger {
+    display: block;
+  }
+
+  .container {
+    margin: auto;
+    max-width: 420px;
+  }
+
+  .card, .graph {
+    max-width: 100%;
+  }
+
+  .grid {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- SIDEBAR -->
+<div class="side-menu" id="menu">
+
+  <img src="images/plantcare.png">
+
+  <a href="#"><i class="fas fa-home"></i> Dashboard</a>
+  <a href="#"><i class="fas fa-leaf"></i> Plants</a>
+  <a href="#"><i class="fas fa-microchip"></i> Devices</a>
+  <a href="#"><i class="fas fa-chart-line"></i> Data & History</a>
+  <a href="#"><i class="fas fa-cog"></i> Settings</a>
+  <a href="#"><i class="fas fa-user"></i> Profile</a>
+
+  <a href="#" onclick="logout()" style="margin-top:45px;">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </a>
+
+</div>
+
+<!-- MAIN -->
+<div class="container" id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+
+    <div>
+      <h3 id="greeting">Plantcare</h3>
+      <div class="location">Basel · Today</div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="toggle" onclick="toggleTheme()"></div>
+
+      <button class="hamburger" onclick="openMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- LIST -->
+  <div class="plant-list card">
+
+    <div class="plant-row">
+      <span>Aloe Vera</span>
+      <span>--% <span class="status warning">UNAVAILABLE</span></span>
+    </div>
+
+    <div class="plant-row">
+      <span>Monstera</span>
+      <span>100% <span class="status normal">NORMAL</span></span>
+    </div>
+
+    <div class="plant-row">
+      <span>Cactus</span>
+      <span>--% <span class="status warning">UNAVAILABLE</span></span>
+    </div>
+
+  </div>
+
+  <!-- CARD -->
+  <div class="card">
+
+  <div class="card-header">
+    <h3>Monstera</h3>
+
+    <div class="meta-info">
+      <span id="cardLocation">--</span> · 
+      <span id="cardDay">--</span>
+    </div>
+  </div>
+
+  <div class="big">100%</div>
+    <span class="status normal">NORMAL</span>
+
+    <div class="divider"></div>
+
+    <div class="grid">
+  <div>
+    <p>Day</p>
+    <strong id="dayOfWeek">--</strong>
+  </div>
+  <div>
+    <p>Location</p>
+    <strong id="locationInfo">--</strong>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:10px;">
+  <div>
+    <p>Temperature</p>
+    <strong>--°C</strong>
+  </div>
+  <div>
+    <p>Humidity</p>
+    <strong>100%</strong>
+  </div>
+</div>
+
+<div class="grid" style="margin-top:10px;">
+  <div>
+  
+  </div>
+  <div>
+    
+  </div>
+</div>
+
+  </div>
+
+  <!-- GRAPH -->
+ <!-- GRAPH -->
+<div class="graph card">
+
+  <!-- HEADER WITH BADGE -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+    <h3 class="graph-title">Soil humidity level - Last 24h</h3>
+
+    <div id="moistureBadge" style="
+      background:#e8f5e9;
+      color:#078311;
+      padding:6px 12px;
+      border-radius:20px;
+      font-weight:600;
+      font-size:14px;
+    ">
+      --%
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div style="height:250px;">
+    <canvas id="waterChart"></canvas>
+  </div>
+
+  <!-- ALERT -->
+  <p id="alertBox" style="
+    margin-top:10px;
+    font-size:13px;
+    font-weight:500;
+  "></p>
+
+  <!-- TIMESTAMP -->
+  <p style="font-size:13px; margin-top:5px;">
+    Last update: <span id="lastUpdate"></span><br>
+    Next reading: Auto
+  </p>
+
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// ===== UI FUNCTIONS =====
+function toggleTheme() {
+  document.getElementById("app").classList.toggle("dark");
+}
+
+function openMenu() {
+  document.getElementById("menu").classList.add("active");
+  document.getElementById("overlay").classList.add("active");
+}
+
+function closeMenu() {
+  document.getElementById("menu").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
+}
+
+function logout() {
+  if (confirm("Logout?")) {
+    window.location.href = "login.html";
+  }
+}
+
+// ===== GREETING =====
+function updateGreeting() {
+  const now = new Date();
+  const hour = now.getHours();
+
+  let timeGreeting;
+  if (hour < 12) timeGreeting = 'Good morning';
+  else if (hour < 17) timeGreeting = 'Good day';
+  else timeGreeting = 'Good evening';
+
+  const name = localStorage.getItem('userName') || 'Michael';
+  document.getElementById('greeting').textContent =
+    `Hello ${name}, ${timeGreeting}`;
+}
+
+
+
+
+
+// ===== META INFO (DAY + LOCATION) =====
+async function loadMetaInfo() {
+
+  // ===== DAY =====
+  const now = new Date();
+  const day = now.toLocaleDateString('en-US', { weekday: 'short' });
+
+  const day1 = document.getElementById("cardDay");
+  const day2 = document.getElementById("dayOfWeek");
+
+  if (day1) day1.textContent = day;
+  if (day2) day2.textContent = day;
+
+  // ===== LOCATION =====
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+
+    const countryCode = data.country_code?.toUpperCase() || "CH";
+
+    const flag = countryCode
+      .split('')
+      .map(c => String.fromCodePoint(127397 + c.charCodeAt()))
+      .join('');
+
+    const city = data.city || data.country_name;
+
+    const loc1 = document.getElementById("locationInfo");
+    const loc2 = document.getElementById("cardLocation");
+
+    if (loc1) loc1.textContent = `${flag} ${city}`;
+    if (loc2) loc2.textContent = `${flag} ${city}`;
+
+  } catch (err) {
+    console.warn("Location failed, using fallback");
+
+    const fallback = "🇨🇭 Switzerland";
+
+    const loc1 = document.getElementById("locationInfo");
+    const loc2 = document.getElementById("cardLocation");
+
+    if (loc1) loc1.textContent = fallback;
+    if (loc2) loc2.textContent = fallback;
+  }
+
+} //  
+
+
+
+
+// ===== CHART =====
+let waterChart;
+
+async function loadChart() {
+  const canvas = document.getElementById('waterChart');
+  if (!canvas) return;
+
+  try {
+    const response = await fetch('../exports/latest.json');
+    const json = await response.json();
+
+    const readings = json.readings;
+
+    //  last 24 readings
+    const last24 = readings.slice(-24);
+
+    const labels = last24.map(r => {
+      const date = new Date(r.ts);
+      return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    });
+
+    const data = last24.map(r => r.moisture);
+
+    //  GET CURRENT VALUE (latest)
+    const currentMoisture = data[data.length - 1];
+
+    // ===== UPDATE BADGE =====
+    const badge = document.getElementById("moistureBadge");
+
+    if (badge) {
+      badge.textContent = currentMoisture + "%";
+
+      if (currentMoisture < 20) {
+        badge.style.background = "#fdecea";
+        badge.style.color = "#c0392b";
+      } else if (currentMoisture < 40) {
+        badge.style.background = "#fff3cd";
+        badge.style.color = "#856404";
+      } else {
+        badge.style.background = "#e8f5e9";
+        badge.style.color = "#078311";
+      }
+    }
+
+    // ===== ALERT SYSTEM =====
+    const alertBox = document.getElementById("alertBox");
+
+    if (alertBox) {
+      if (currentMoisture < 20) {
+        alertBox.innerHTML = "🚨 Critical: Water immediately!";
+        alertBox.style.color = "#c0392b";
+      } else if (currentMoisture < 40) {
+        alertBox.innerHTML = "⚠️ Low moisture: Consider watering soon";
+        alertBox.style.color = "#e67e22";
+      } else {
+        alertBox.innerHTML = " 💧% Humidity level is Perfect!";
+        alertBox.style.color = "#078311";
+      }
+    }
+
+    // ===== DRAW CHART =====
+    if (waterChart) {
+      waterChart.destroy();
+    }
+
+    waterChart = new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: data,
+          borderColor: '#078311',
+          backgroundColor: 'rgba(7,131,17,0.1)',
+          borderWidth: 2,
+          tension: 0.3,
+          fill: true,
+
+          // highlight last point
+          pointRadius: (ctx) =>
+            ctx.dataIndex === data.length - 1 ? 5 : 0,
+
+          pointBackgroundColor: (ctx) =>
+            ctx.dataIndex === data.length - 1 ? '#27a331' : '#078311',
+
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        layout: {
+          padding: { right: 20 }
+        },
+
+        plugins: {
+          legend: { display: false }
+        },
+
+        scales: {
+          x: {
+            offset: true,
+            grid: { display: false },
+            ticks: { maxTicksLimit: 6 }
+          },
+          y: {
+            min: 0,
+            max: 100,
+            ticks: { stepSize: 10 },
+            title: {
+              display: true,
+              text: 'Moisture (%)'
+            }
+          }
+        }
+      }
+    });
+
+    // ===== TIME =====
+    const now = new Date();
+    const el = document.getElementById("lastUpdate");
+    if (el) el.textContent = now.toLocaleTimeString();
+
+  } catch (err) {
+    console.error("Error loading chart:", err);
+  }
+}
+
+// ===== INIT =====
+window.addEventListener("load", () => {
+  updateGreeting();
+  loadChart();
+  loadMetaInfo(); //  NEW
+});
+</script>
+
+
+</body>
+</html> 

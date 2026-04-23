@@ -1,0 +1,95 @@
+  <!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - PlantCare</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Font -->
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Main CSS -->
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div class="auth-page">
+
+<!-- RIGHT PANEL -->
+<div class="auth-right">
+  <a href="https://www.plantcare.com" target="_blank">
+    <img src="images/plantcare.png" alt="Plantcare logo" class="logo">
+  </a>
+
+  <h3>Login to your plantcare account</h3>
+  <p>
+    Stay connected to your plants, track watering schedules,
+    monitor plant health, and receive smart reminders tailored
+    to each plant’s needs
+  </p>
+
+  <h4>Sign to plantcare dashboard</h4>
+
+  <img src="images/plant1.PNG" alt="Illustration" class="illustration">
+</div>
+
+<!-- LEFT PANEL -->
+<div class="auth-left">
+  <form method="POST" action="/login" class="auth-form">
+
+    <h2>Login to your account</h2>
+
+    <div class="secured-login">
+      <img src="https://img.icons8.com/?size=100&id=kzLfqGwKtL8z&format=png&color=078311" alt="lock icon" />
+      <span>Secured Login</span>
+    </div>
+
+    <div class="input-group">
+      <input type="email" name="email" placeholder="Email" required>
+    </div>
+
+    <div class="input-group password-group">
+  <input type="password" id="password" name="password" placeholder="Password" required>
+
+  <span class="toggle-password" onclick="togglePassword(this)">
+    <img id="eyeIcon" 
+         src="https://img.icons8.com/?size=100&id=34226&format=png&color=737373" 
+         alt="toggle password">
+  </span>
+</div>
+
+    <div class="form-options">
+      <label class="remember-left">
+        <input type="checkbox" name="remember"><span>Remember me</span>
+      </label>
+
+      <a href="#" class="forgot-link">Forgot Password?</a>
+    </div>
+
+    <button type="submit">Log In</button>
+
+    <p class="footer-text">
+      Don’t have an account?
+      <a href="/signup/step1" class="signup-link">Signup</a>
+    </p>
+
+  </form>
+</div>
+
+
+  </div>
+
+  <script src="main.js" defer></script>
+
+
+  
+
+
+
+
+</body>
+</html>
