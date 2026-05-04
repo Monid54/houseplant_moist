@@ -1,0 +1,329 @@
+/* ===== GLOBAL ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: #f5f5f5;
+}
+
+/* ===== AUTH LAYOUT (LOGIN + SIGNUP) ===== */
+.auth-page {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: 100vh;
+}
+
+.auth-left,
+.auth-right {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ===== RIGHT PANEL ===== */
+.auth-right {
+  background: #078311;
+  color: white;
+  text-align: center;
+  flex-direction: column;
+  padding: 50px 20px;
+  justify-content: center;
+}
+
+
+
+
+.auth-right .logo {
+  max-width: 300px;
+  margin-top: -50px;
+  margin-bottom: -80px;
+}
+
+.auth-right h3 {
+  font-size: 15px;
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+.auth-right h4 {
+  font-size: 14px;
+  margin-bottom: 15px;
+  margin-top: 0px;
+}
+
+.auth-right p {
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+
+/* ===== ANIMATION ===== */
+/* ===== ILLUSTRATION ===== */
+.auth-right .illustration {
+  max-width: 300px;   /* controls size */
+  width: 100%;
+  height: auto;
+
+  margin-top: 20px;
+  margin-bottom: -30px;
+
+  transform: translateY(40px);
+  opacity: 0;
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.auth-right .illustration:hover {
+  transform: translateY(-5px) scale(1.02);
+}
+
+
+/* ===== FORM ===== */
+.auth-form {
+  width: 80%;
+  max-width: 320px;
+}
+
+.auth-form h2 {
+  text-align: center;
+  margin-bottom: 5px;
+  color: #252526c5;
+  text-align: center;
+  font-size: 18px;
+}
+
+
+.secured-login {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+
+.secured-login img {
+  width: 18px;
+  
+}
+
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
+  font-size: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.remember-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forgot-link {
+  text-decoration: none;
+  color: #27a331;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+
+.forgot-link:hover {
+  color: #3d38d6;
+}
+
+
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+button[type="submit"] {
+  width: 100%;
+  background: #27a331;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button[type="submit"]:hover {
+  background: #078311;
+}
+
+
+.form-actions button[type="submit"] {
+  width: auto;   /* overrides the global rule ONLY here */
+  flex: 1;
+}
+
+
+
+.footer-text {
+  margin-top: 20px;
+  font-size: 14px;
+  text-align: center;
+  
+}
+
+
+.signup-link {
+  text-decoration: none;
+  color: #27a331;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+
+.signup-link:hover {
+  color: #3d38d6;
+}
+
+/* ===== PASSWORD TOGGLE ===== */
+.password-group {
+  position: relative;
+}
+
+.password-group input {
+  padding-right: 45px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+
+  display: flex;              
+  align-items: center;        
+  justify-content: center;
+  
+
+}
+
+
+.toggle-password img {
+  width: 20px;
+  height: 20px;
+  fill: #888;
+}
+
+
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .auth-page {
+    flex-direction: column;
+  }
+
+  .auth-left,
+  .auth-right {
+    padding: 30px 20px;
+    width: 100%;
+  }
+}
+
+
+/* ===== Create account page  ===== */
+.form-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+
+    .btn-primary {
+      background-color: #27a331;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-secondary {
+      background-color: #060a91;
+      color: white;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      transform: scale(1.05);
+    }
+
+
+    /* BUTTONS FOR LANDING PAGE */
+
+.btn {
+  padding: 12px;
+  border-radius: 6px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: bold;
+  display: block;
+}
+
+.btn-primary {
+  background: #27a331;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #078311;
+}
+
+.btn-secondary {
+  background: #060a91;
+  color: white;
+}
+
+.btn-secondary:hover {
+  transform: scale(1.03);
+}
+
+/* GOOGLE BUTTON */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #555;
+  border: 1px solid #ddd;
+}
+
+.google-btn:hover {
+  background: #f5f5f5;
+}
