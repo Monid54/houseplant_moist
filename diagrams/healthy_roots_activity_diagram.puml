@@ -1,0 +1,115 @@
+@startuml Healthy_Roots_Activity_Diagram
+
+title Activity Diagram – Measurement & Storage Workflow
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam noteFontSize 9
+skinparam roundcorner 6
+skinparam ArrowColor #333333
+skinparam ActivityBorderColor #444444
+skinparam ActivityBackgroundColor #F5F5F5
+skinparam ActivityDiamondBackgroundColor #FFF2CC
+skinparam ActivityDiamondBorderColor #444444
+skinparam ActivityStartColor #333333
+skinparam ActivityEndColor #333333
+skinparam swimlaneBorderColor #888888
+skinparam swimlaneTitleFontSize 11
+skinparam swimlaneTitleFontStyle bold
+skinparam padding 4
+
+|ESP32-C3 Sensor Node|
+start
+
+' ═══════════════════════════════
+' Loop start
+' ═══════════════════════════════
+:loop() begins;
+note right : INTERVAL_MS = 900 000 ms\ndelay() at end of previous cycle
+
+:ensureWiFi()\n[WiFi.begin(WIFI_SSID, WIFI_PASS)\ntimeout 20 000 ms];
+
+if (WiFi.status() == WL_CONNECTED?) then (no)
+  :WiFi.reconnect();
+  :delay(2 000 ms);
+  note right : return to loop()\nstart (next iteration)
+  stop
+else (yes)
+endif
+
+' ═══════════════════════════════
+' Measurement
+' ═══════════════════════════════
+:readAveraged(SENSOR_PIN=3, samples=12)\n→ raw : int;
+note right : 12 × analogRead() with 5 ms delay\naveraged → 0..4095
+
+:toPercent(raw, dry=390, wet=630)\n→ moisture : int;
+note right : map(raw, 390, 630, 0, 100)\nclamped to [0..100]
+
+:WiFi.RSSI() → rssi : int;
+
+:buildUrl()\nhostIpFallback = "192.168.1.161"\nport = 8080;
+
+if (url.length() == 0?) then (yes)
+  :Serial.println("DNS failed");
+  :delay(INTERVAL_MS = 900 000 ms);
+  stop
+else (no)
+endif
+
+:Build JSON payload\n{"sensor_id":"plant1",\n"raw":<raw>,\n"moisture":<moisture>,\n"rssi":<rssi>};
+note right : vcc not included –\nno battery monitoring in code
+
+' ═══════════════════════════════
+' Retry loop (max 3 attempts)
+' ═══════════════════════════════
+:i = 0\nok = false;
+
+while (i < 3 AND NOT ok?) is (yes)
+
+  :postJson(url, payload)\nHTTP POST /ingest\nContent-Type: application/json\ntimeout 6 000 ms;
+
+  |Server (Raspberry Pi)|
+
+  :Receive HTTP POST /ingest;
+  :Parse JSON body via\nReadingIn (Pydantic BaseModel);
+
+  if (raw is None AND moisture is None?) then (yes)
+    :raise HTTPException\nHTTP 400\n{"detail": "raw oder moisture\nmuss gesetzt sein"};
+
+    |ESP32-C3 Sensor Node|
+    :ok = false;
+    :i = i + 1;
+    :delay(1 500 ms);
+
+  else (no)
+
+    |Server (Raspberry Pi)|
+    :ts = r.ts OR\ndatetime.now(utc).isoformat();
+    :INSERT INTO readings\n(sensor_id, ts, raw, moisture, vcc, rssi)\nVALUES (?, ?, ?, ?, ?, ?);
+    :conn.commit();
+    :return HTTP 200\n{"stored": true,\n"sensor_id": ...,\n"ts": ...};
+
+    |ESP32-C3 Sensor Node|
+    :ok = true;
+
+  endif
+
+endwhile (no — ok=true OR i==3)
+
+' ═══════════════════════════════
+' Post-loop logging
+' ═══════════════════════════════
+:Serial.print("raw=<raw>
+moisture=<moisture>%
+ok=<ok>");
+
+' ═══════════════════════════════
+' Sleep
+' ═══════════════════════════════
+:delay(INTERVAL_MS = 900 000 ms)\n[15 min until next loop() call];
+note right : No deep sleep –\ndelay() keeps Wi-Fi alive.\nNext loop() iteration starts\nthe cycle again.
+
+stop
+
+@enduml
