@@ -1,0 +1,121 @@
+@startuml Healthy_Roots_ER_Diagram
+
+title ER Diagram – Healthy Roots @ Home
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam EntityFontSize 10
+skinparam EntityFontStyle bold
+skinparam EntityBorderColor #444444
+skinparam EntityBackgroundColor #F5F5F5
+skinparam ArrowColor #333333
+skinparam noteFontSize 9
+skinparam roundcorner 6
+skinparam padding 6
+skinparam linetype ortho
+
+' ═══════════════════════════════════════════
+' CURRENT IMPLEMENTATION
+' ═══════════════════════════════════════════
+
+package "Current Implementation (implemented)" #D5E8D4 {
+
+  entity "readings" as READINGS {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    * sensor_id : TEXT <<NOT NULL>>
+    * ts : TEXT <<NOT NULL>>
+    --
+    raw : INTEGER
+    moisture : INTEGER
+    vcc : REAL
+    rssi : INTEGER
+  }
+
+  note right of READINGS
+    Single entity – deliberate simplification.
+    Only one active sensor ("plant1").
+    sensor_id stored as plain TEXT,
+    not a FK to a separate sensors table.
+    INDEX: idx_readings_sensor_ts
+           ON readings(sensor_id, ts)
+    Queried via:
+      GET /readings?sensor_id&limit
+      GET /latest?sensor_id
+  end note
+
+}
+
+' ═══════════════════════════════════════════
+' FUTURE MODEL
+' ═══════════════════════════════════════════
+
+package "Future Model (not yet implemented)" #DAE8FC {
+
+  entity "users" as USERS {
+    * id : INTEGER <<PK>>
+    --
+    * email : TEXT <<UNIQUE, NOT NULL>>
+    * password_hash : TEXT <<NOT NULL>>
+    first_name : TEXT
+    last_name : TEXT
+    country : TEXT
+    created_at : TEXT
+  }
+
+  entity "sensors" as SENSORS {
+    * id : TEXT <<PK>>
+    --
+    * plant_name : TEXT <<NOT NULL>>
+    location : TEXT
+    registered_at : TEXT
+    * user_id : INTEGER <<FK → users.id>>
+  }
+
+  entity "plants" as PLANTS {
+    * id : INTEGER <<PK>>
+    --
+    * name : TEXT <<NOT NULL>>
+    * user_id : INTEGER <<FK → users.id>>
+    * sensor_id : TEXT <<FK → sensors.id>>
+    dry_threshold : INTEGER
+    wet_threshold : INTEGER
+  }
+
+  entity "readings_future" as READINGS_F {
+    * id : INTEGER <<PK, AUTOINCREMENT>>
+    --
+    * sensor_id : TEXT <<FK → sensors.id, NOT NULL>>
+    * ts : TEXT <<NOT NULL>>
+    --
+    raw : INTEGER
+    moisture : INTEGER
+    vcc : REAL
+    rssi : INTEGER
+  }
+
+  note right of READINGS_F
+    Normalised version of readings.
+    sensor_id becomes a proper FK
+    linking to sensors table.
+  end note
+
+  note right of USERS
+    Corresponds to login.html /
+    signup.html / create_account.html
+    in the frontend (UI only, not yet
+    wired to a backend).
+  end note
+
+  ' Relationships
+  USERS   ||--o{ SENSORS      : "owns >"
+  USERS   ||--o{ PLANTS       : "manages >"
+  SENSORS ||--o{ READINGS_F   : "produces >"
+  PLANTS  ||--|| SENSORS      : "monitored by >"
+
+}
+
+' Link current → future
+READINGS .. READINGS_F : evolves into
+
+@enduml
