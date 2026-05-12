@@ -1,90 +1,10 @@
 {
   "meta": {
-    "generated_at": "2026-05-11 22:05:01",
+    "generated_at": "2026-05-12 00:30:00",
     "latest_days": 14,
-    "count": 339
+    "count": 338
   },
   "readings": [
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-27T22:06:21.680669+00:00",
-      "raw": 431,
-      "moisture": 17,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-27T22:21:21.835483+00:00",
-      "raw": 435,
-      "moisture": 18,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-27T22:36:21.956956+00:00",
-      "raw": 429,
-      "moisture": 16,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-27T22:51:22.106310+00:00",
-      "raw": 432,
-      "moisture": 17,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-27T23:06:22.304783+00:00",
-      "raw": 435,
-      "moisture": 18,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-27T23:21:22.469901+00:00",
-      "raw": 433,
-      "moisture": 17,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-27T23:36:22.605826+00:00",
-      "raw": 434,
-      "moisture": 18,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-27T23:51:22.752485+00:00",
-      "raw": 435,
-      "moisture": 18,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-28T00:06:22.895377+00:00",
-      "raw": 439,
-      "moisture": 20,
-      "vcc": null,
-      "rssi": -65
-    },
-    {
-      "sensor_id": "plant1",
-      "ts": "2026-04-28T00:21:23.029884+00:00",
-      "raw": 435,
-      "moisture": 18,
-      "vcc": null,
-      "rssi": -65
-    },
     {
       "sensor_id": "plant1",
       "ts": "2026-04-28T00:36:23.161448+00:00",
@@ -2716,6 +2636,78 @@
       "moisture": 98,
       "vcc": null,
       "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-11T22:15:30.542388+00:00",
+      "raw": 621,
+      "moisture": 96,
+      "vcc": null,
+      "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-11T22:30:30.684904+00:00",
+      "raw": 620,
+      "moisture": 95,
+      "vcc": null,
+      "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-11T22:45:30.833598+00:00",
+      "raw": 622,
+      "moisture": 96,
+      "vcc": null,
+      "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-11T23:00:30.971504+00:00",
+      "raw": 622,
+      "moisture": 96,
+      "vcc": null,
+      "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-11T23:15:31.118097+00:00",
+      "raw": 623,
+      "moisture": 97,
+      "vcc": null,
+      "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-11T23:30:31.256533+00:00",
+      "raw": 625,
+      "moisture": 97,
+      "vcc": null,
+      "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-11T23:45:31.396932+00:00",
+      "raw": 625,
+      "moisture": 97,
+      "vcc": null,
+      "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-12T00:00:31.542786+00:00",
+      "raw": 622,
+      "moisture": 96,
+      "vcc": null,
+      "rssi": -62
+    },
+    {
+      "sensor_id": "plant1",
+      "ts": "2026-05-12T00:15:31.688968+00:00",
+      "raw": 623,
+      "moisture": 97,
+      "vcc": null,
+      "rssi": -63
     }
   ]
 }
