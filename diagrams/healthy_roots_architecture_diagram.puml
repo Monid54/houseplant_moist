@@ -1,0 +1,108 @@
+@startuml Healthy_Roots_Architecture_Diagram
+
+title Architecture Diagram – Healthy Roots @ Home
+
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam componentFontSize 10
+skinparam interfaceFontSize 9
+skinparam noteFontSize 9
+skinparam ArrowColor #333333
+skinparam ComponentBorderColor #444444
+skinparam ComponentBackgroundColor #F5F5F5
+skinparam DatabaseBorderColor #444444
+skinparam DatabaseBackgroundColor #FFF2CC
+skinparam NodeBorderColor #444444
+skinparam NodeBackgroundColor #FFFFFF
+skinparam rectangleBorderColor #888888
+skinparam rectangleBorderStyle dashed
+skinparam roundcorner 8
+skinparam padding 6
+
+' ═══════════════════════════════════════════
+' Layer 1 – Hardware / Sensor Layer
+' ═══════════════════════════════════════════
+rectangle "Hardware Layer" #D5E8D4 {
+  component "Capacitive Soil\nMoisture Sensor V2.0\n(ADC PIN 3, 0..4095)" as SENSOR
+  component "ESP32-C3 Super Mini\n(sensor_1.ino)\n\nreadAveraged(12 samples)\ntoPercent(dry=390, wet=630)\nensureWiFi() / postJson()\nretry up to 3×, delay 1 500 ms\nINTERVAL_MS = 900 000 ms" as ESP32
+  SENSOR --> ESP32 : analog signal\n(raw ADC value)
+}
+
+' ═══════════════════════════════════════════
+' Layer 2 – Network Layer
+' ═══════════════════════════════════════════
+rectangle "Network Layer" #DAE8FC {
+  interface "Wi-Fi\n(WIFI_SSID / WIFI_PASS\nfrom secrets.h)" as WIFI
+  ESP32 --> WIFI : HTTP POST /ingest\nJSON: {sensor_id, raw,\nmoisture, rssi}\ntimeout 6 000 ms
+}
+
+' ═══════════════════════════════════════════
+' Layer 3 – Server / Application Layer
+' ═══════════════════════════════════════════
+rectangle "Application Layer – Raspberry Pi 4" #FFF2CC {
+
+  component "FastAPI Server\n(app.py, port 8080)\n\nReadingIn (Pydantic BaseModel)\nValidation: raw OR moisture required\nts auto-generated if missing" as FASTAPI
+
+  rectangle "REST API Endpoints" #FFFDE7 {
+    component "GET  /health\n→ {ok: true}" as EP_HEALTH
+    component "POST /ingest\nBody: ReadingIn JSON\n→ {stored, sensor_id, ts}\n400 if raw=None AND moisture=None" as EP_INGEST
+    component "GET  /readings\nParams: sensor_id, limit [1..5000]\n→ List[dict] ORDER BY ts DESC" as EP_READINGS
+    component "GET  /latest\nParam: sensor_id\n→ dict or null" as EP_LATEST
+  }
+
+  WIFI    --> FASTAPI   : HTTP POST /ingest
+  FASTAPI --> EP_HEALTH
+  FASTAPI --> EP_INGEST
+  FASTAPI --> EP_READINGS
+  FASTAPI --> EP_LATEST
+}
+
+' ═══════════════════════════════════════════
+' Layer 4 – Data Layer
+' ═══════════════════════════════════════════
+rectangle "Data Layer" #F8CECC {
+
+  database "SQLite DB\n(plant.db)" as SQLITE {
+    component "readings table\n──────────────────\nid  INTEGER PK AUTOINCREMENT\nsensor_id  TEXT NOT NULL\nts  TEXT NOT NULL\nraw  INTEGER\nmoisture  INTEGER\nvcc  REAL\nrssi  INTEGER\n──────────────────\nINDEX: (sensor_id, ts)" as TABLE
+  }
+
+  component "ExportService\n(export_db.py)\n\nlatestDays = 14\nhourly buckets (recent)\n6-hourly buckets (older)\n→ exports/latest.json\n→ exports/daily/YYYY-MM-DD.json" as EXPORT
+
+  component "export_and_push.sh\n(systemd timer, nightly)\n\ngit add exports/\ngit commit (if changes)\ngit push → GitHub" as PUSH
+
+  FASTAPI --> TABLE   : INSERT INTO readings\n(sensor_id, ts, raw,\nmoisture, vcc, rssi)
+  EP_READINGS --> TABLE : SELECT … ORDER BY ts DESC\nLIMIT <limit>
+  EP_LATEST   --> TABLE : SELECT … ORDER BY ts DESC\nLIMIT 1
+  TABLE   --> EXPORT  : read all rows\nts >= cutoff
+  EXPORT  --> PUSH    : JSON files written
+}
+
+' ═══════════════════════════════════════════
+' Layer 5 – Frontend / Client Layer (future)
+' ═══════════════════════════════════════════
+rectangle "Client Layer – Web Frontend (PlantCare)" #EEEEEE {
+  component "Browser\n(dashboard.html)\n\nChart.js – last 24h chart\nStatus cards: Normal/Warning/Critical\nDark mode toggle\nLogin / Sign-up (UI only)" as BROWSER
+  component "GitHub Pages / CDN\n(exports/latest.json)" as GHPAGES
+
+  PUSH    --> GHPAGES : git push
+  GHPAGES --> BROWSER : fetch('../exports/latest.json')
+  EP_READINGS --> BROWSER : GET /readings (future)
+  EP_LATEST   --> BROWSER : GET /latest (future)
+}
+
+note bottom of BROWSER
+  Thresholds (dashboard.html):
+  moisture < 20% → Critical 🚨
+  moisture < 40% → Warning ⚠️
+  moisture ≥ 40% → Normal 💧
+end note
+
+note bottom of ESP32
+  Architecture style: Client–Server
+  (Layered + Repository pattern)
+  NFR-4: No deep sleep – delay() only
+  NFR-5: ≥10 sensors via sensor_id
+  NFR-7: Server portable (SQLite → any)
+end note
+
+@enduml

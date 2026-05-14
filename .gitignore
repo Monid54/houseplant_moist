@@ -17,3 +17,6 @@ backend/plant.db
 
 # OS
 .DS_Store
+
+# Claude
+/CLAUDE.md

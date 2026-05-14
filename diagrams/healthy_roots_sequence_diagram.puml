@@ -1,0 +1,121 @@
+@startuml Healthy_Roots_Sequence_Diagram
+
+title Sequence Diagram – Periodic Measurement & Storage Cycle
+
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+skinparam roundcorner 6
+skinparam defaultFontName Arial
+skinparam defaultFontSize 10
+skinparam sequenceArrowFontSize 9
+skinparam sequenceParticipantFontSize 10
+skinparam sequenceGroupFontSize 10
+skinparam sequenceGroupHeaderFontSize 10
+skinparam noteFontSize 9
+skinparam sequenceLifeLineBorderColor #555555
+skinparam sequenceArrowColor #333333
+skinparam sequenceParticipantBorderColor #444444
+skinparam sequenceParticipantBackgroundColor #F5F5F5
+skinparam sequenceGroupBodyBackgroundColor transparent
+skinparam sequenceDividerBackgroundColor #E0E0E0
+skinparam sequenceDividerFontStyle bold
+skinparam sequenceDividerFontSize 10
+skinparam padding 4
+
+' ─────────────────────────────────────────
+' Participants
+' ─────────────────────────────────────────
+actor       "Time Trigger\n(15 min)"   as Timer
+participant ":SensorNode"              as SN
+participant ":MoistureSensor"          as MS
+participant ":WiFiClient"              as WC
+participant ":HttpSender"              as HS
+participant ":ApiServer\n(FastAPI)"    as API
+participant ":readings\n(SQLite DB)"   as DB  <<database>>
+
+' ═══════════════════════════════════════════
+== Measurement Phase (FR-1, FR-2) ==
+' ═══════════════════════════════════════════
+
+Timer -> SN : loop() [delay(INTERVAL_MS) elapsed]
+
+SN -> WC : ensureWiFi()
+
+alt WiFi not connected
+  WC -> WC : WiFi.begin(WIFI_SSID, WIFI_PASS)\n[timeout 20 000 ms]
+  WC --> SN : WL_CONNECTED = false
+  SN -> WC : WiFi.reconnect()
+  note right of SN : delay(2 000 ms)\nthen return to loop()
+else WiFi connected
+  WC --> SN : WL_CONNECTED = true
+end
+
+SN -> MS : readAveraged(SENSOR_PIN=3, samples=12)
+note right of MS : 12 × analogRead()\nwith 5 ms delay each\n→ average of 0..4095
+MS --> SN : raw : int
+
+SN -> MS : toPercent(raw, dry=390, wet=630)
+note right of MS : map(raw, 390, 630, 0, 100)\nclamped to [0..100]
+MS --> SN : moisture : int
+
+SN -> HS : buildUrl()
+note right of HS : hostIpFallback = "192.168.1.161"\nport = 8080\n→ http://192.168.1.161:8080/ingest
+HS --> SN : url : String
+
+SN -> SN : construct JSON payload\n{"sensor_id":"plant1",\n"raw":<raw>,\n"moisture":<moisture>,\n"rssi":<WiFi.RSSI()>}
+
+note right of SN
+  FR-2: payload contains
+  – sensor_id
+  – raw (ADC value)
+  – moisture (%)
+  – rssi (dBm)
+  vcc not included
+  (no battery monitoring)
+end note
+
+' ═══════════════════════════════════════════
+== Transmission Phase (FR-3, FR-4) ==
+' ═══════════════════════════════════════════
+
+loop i < 3 AND NOT ok  [retry up to 3×, delay 1 500 ms]
+  SN -> HS : postJson(url, payload)
+  HS -> API : HTTP POST /ingest\nContent-Type: application/json\n[timeout 6 000 ms]
+
+  alt Validation fails (HTTP 400)
+    API --> HS : HTTP 400\n{"detail":"raw oder moisture\nmuss gesetzt sein"}
+    HS --> SN : ok = false
+    SN -> SN : delay(1 500 ms)
+
+  else POST succeeds (HTTP 2xx)
+
+    ' ═══════════════════════════════════════
+    == Persistence Phase (FR-5) ==
+    ' ═══════════════════════════════════════
+
+    API -> API : ts = datetime.now(utc).isoformat()\n[if ts not in payload]
+    API -> DB  : INSERT INTO readings\n(sensor_id, ts, raw, moisture, vcc, rssi)\nVALUES (?, ?, ?, ?, ?, ?)
+    DB  --> API : OK (rowId)
+    API -> DB  : conn.commit()
+    API --> HS : HTTP 201\n{"stored":true,\n"sensor_id":"plant1",\n"ts":"<iso-timestamp>"}
+    HS --> SN  : ok = true
+  end
+end
+
+SN -> SN : Serial.print("raw=<raw> moisture=<moisture>% ok=<ok>")
+
+' ═══════════════════════════════════════════
+== Sleep Phase (NFR-4: Energy Efficiency) ==
+' ═══════════════════════════════════════════
+
+SN -> SN : delay(900 000 ms)\n[15 min until next cycle]
+note right of SN
+  No deep sleep used –
+  delay() keeps connection alive.
+  Next loop() iteration restarts
+  the measurement phase.
+end note
+
+SN -> Timer : [next cycle begins]
+
+@enduml
