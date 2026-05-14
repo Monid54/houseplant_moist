@@ -30,4 +30,5 @@ fi
 # Commit the changes with a message that includes the current date in UTC. The date is formatted as YYYY-MM-DD.
 git commit -m "Daily export $(date -u +%F)"
 # Push the commit to the remote Git repository. This will update the repository with the new JSON exports.
+git pull --rebase origin main
 git push
