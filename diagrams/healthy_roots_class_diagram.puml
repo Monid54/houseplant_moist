@@ -1,6 +1,14 @@
 @startuml Healthy_Roots_Class_Diagram
 
-title Healthy Roots @ Home – UML Class Diagram
+title Healthy Roots @ Home – UML Class Diagram (Target Design)
+
+note as N1
+  Target OOP design.
+  Current prototype is procedural:
+  sensor_1.ino uses free functions,
+  app.py and export_db.py use
+  flat FastAPI / script style.
+end note
 
 skinparam classAttributeIconSize 0
 skinparam classFontStyle bold
@@ -8,49 +16,37 @@ skinparam classHeaderBackgroundColor #DDDDDD
 skinparam roundcorner 6
 skinparam linetype ortho
 
-' ─────────────────────────────────────────
-' ESP32 Firmware
-' ─────────────────────────────────────────
 package "ESP32 Firmware" #DAECFC {
 
   class SensorNode {
-    - sensorId : String
-    - measurementInterval : int = 900
+    - sensorId : String = "plant1"
+    - measurementInterval : int = 900000
     - maxRetries : int = 3
-    - sensor : MoistureSensor
     --
     + setup() : void
     + loop() : void
-    + sleepUntilNext(sec : int) : void
   }
 
   class MoistureSensor {
-    - pin : int
+    - pin : int = 3
     - dry : int = 390
     - wet : int = 630
-    - readRaw : int
-    - moisturePercentage : int
     --
-    + readAveraged(samples : int) : int
+    + readAveraged(samples : int = 12) : int
     + toPercent(raw : int) : int
-    + calibrate() : void
   }
 
   class WiFiClient {
     - ssid : String
     - password : String
     --
-    + connect() : boolean
-    + disconnect() : void
+    + ensureWiFi() : void
     + isConnected() : boolean
-    + reconnect() : boolean
-    + getRSSI() : int
   }
 
   class HttpSender {
-    - serverUrl : String
-    - hostIpFallback : String
-    - hostMdns : String
+    - hostIpFallback : String = "192.168.1.161"
+    - hostMdns : String = "plant-hub.local"
     - port : int = 8080
     - timeout : int = 6000
     --
@@ -60,27 +56,21 @@ package "ESP32 Firmware" #DAECFC {
 
   class Measurement {
     - sensorId : String
-    - timestamp : String
-    - rawValue : int
+    - raw : int
     - moisture : int
     - rssi : int
-    - vcc : float
     --
     + toJSON() : String
-    + validate() : boolean
   }
 
 }
 
-' ─────────────────────────────────────────
-' Server (Raspberry Pi)
-' ─────────────────────────────────────────
 package "Server (Raspberry Pi)" #FFF2CC {
 
   class ReadingIn <<Pydantic BaseModel>> {
-    + sensor_id : str  [1..64]
-    + raw : Optional[int]  [0..4095]
-    + moisture : Optional[int]  [0..100]
+    + sensor_id : str
+    + raw : Optional[int]
+    + moisture : Optional[int]
     + vcc : Optional[float]
     + rssi : Optional[int]
     + ts : Optional[str]
@@ -88,47 +78,29 @@ package "Server (Raspberry Pi)" #FFF2CC {
 
   class ApiServer {
     - port : int = 8080
-    - measurementRepository : MeasurementRepository
     --
-    + init() : void
-    + start() : void
     + health() : dict
     + ingest(r : ReadingIn) : dict
     + getReadings(sensor_id : str, limit : int) : list
     + latest(sensor_id : str) : dict
   }
 
-  class Sensor {
-    - sensorId : String
-    - plantName : String
-    - location : String
-    - registeredAt : Date
-    --
-    + getLatestMeasurement() : Measurement
-    + getAverageMoisture(days : int) : float
-  }
-
   class MeasurementRepository {
-    - dbConnection : DatabaseConnection
     --
-    + save(data : ReadingIn) : boolean
-    + findBySensorId(id : String) : List<Measurement>
-    + findByTimeRange(from : double, to : double) : List<Measurement>
-    + countBySensorId(sensorId : String) : int
+    + save(data : ReadingIn) : void
+    + findBySensorId(id : str, limit : int) : list
+    + findLatest(sensor_id : str) : dict
   }
 
   class DatabaseConnection {
-    - dbPath : String
-    - connection : SQLiteConnection
+    - dbPath : Path
     --
-    + open() : void
-    + close() : void
-    + executeQuery(query : String) : ResultSet
+    + connect() : Connection
+    + initDb() : void
   }
 
   class ExportService {
     - dbPath : Path
-    - exportsDir : Path
     - latestDays : int = 14
     --
     + exportLatest() : void
@@ -138,41 +110,28 @@ package "Server (Raspberry Pi)" #FFF2CC {
 
 }
 
-' ─────────────────────────────────────────
-' Web Application (future)
-' ─────────────────────────────────────────
-package "Web Application (future)" #D5E8D4 {
-
-  class NotificationService {
-    - thresholdHours : int = 24
-    --
-    + checkOfflineStatus() : void
-    + sendAlertSensor(sensor : Sensor) : void
-  }
+package "Web Frontend (Future)" #D5E8D4 {
 
   class Dashboard {
-    - timeRange : String
-    - selectedSensor : String
     --
     + showOverview() : void
-    + selectSensor(sensorId : String) : void
   }
 
   class ChartView {
-    - timeRange : Range
     --
-    + renderData(data : List<Measurement>) : void
-    + exportCSV() : File
+    + renderData(data : list) : void
+  }
+
+  class NotificationService {
+    --
+    + checkOfflineStatus() : void
+    + sendAlert() : void
   }
 
 }
 
-' ─────────────────────────────────────────
-' Relationships
-' ─────────────────────────────────────────
-
 ' ESP32 internal
-SensorNode *-- MoistureSensor : contains
+SensorNode *-- MoistureSensor
 SensorNode ..> WiFiClient : uses
 SensorNode ..> HttpSender : uses
 HttpSender ..> Measurement : creates
@@ -181,16 +140,13 @@ HttpSender ..> Measurement : creates
 Measurement ..> ApiServer : "HTTP POST /ingest"
 
 ' Server internal
-ApiServer ..> ReadingIn : validates via
+ApiServer ..> ReadingIn : validates
 ApiServer --> MeasurementRepository : uses
-ApiServer ..> Sensor : observes
-MeasurementRepository "1" --> "*" Measurement : has
-MeasurementRepository --> DatabaseConnection : persists
-ExportService ..> DatabaseConnection : reads
+MeasurementRepository --> DatabaseConnection : uses
+ExportService --> DatabaseConnection : reads
 
-' Future Web App
-NotificationService ..> ApiServer : monitors
+' Future
 Dashboard --> ChartView : displays
-ChartView ..> ExportService : "queries JSON"
+NotificationService ..> ApiServer : monitors
 
 @enduml
