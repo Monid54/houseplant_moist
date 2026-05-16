@@ -20,7 +20,6 @@ skinparam sequenceGroupBodyBackgroundColor transparent
 skinparam sequenceDividerBackgroundColor #E0E0E0
 skinparam sequenceDividerFontStyle bold
 skinparam sequenceDividerFontSize 10
-skinparam padding 4
 
 ' ─────────────────────────────────────────
 ' Participants
@@ -97,7 +96,7 @@ loop i < 3 AND NOT ok  [retry up to 3×, delay 1 500 ms]
     API -> DB  : INSERT INTO readings\n(sensor_id, ts, raw, moisture, vcc, rssi)\nVALUES (?, ?, ?, ?, ?, ?)
     DB  --> API : OK (rowId)
     API -> DB  : conn.commit()
-    API --> HS : HTTP 201\n{"stored":true,\n"sensor_id":"plant1",\n"ts":"<iso-timestamp>"}
+    API --> HS : HTTP 200\n{"stored":true,\n"sensor_id":"plant1",\n"ts":"<iso-timestamp>"}
     HS --> SN  : ok = true
   end
 end
