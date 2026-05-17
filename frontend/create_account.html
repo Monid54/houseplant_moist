@@ -35,7 +35,7 @@
     <!-- LEFT PANEL -->
     <div class="auth-left">
         
-       <form  method="POST" action="/create_account" class="auth-form">
+       <form id="createAccountForm" class="auth-form">  <!-- Form for account creation -->
         
         <h2>Account security</h2>
 
@@ -77,7 +77,7 @@
 
 
         <div class="form-actions">
-          <a href="/signup/step2" class="btn btn-secondary">← Previous</a>
+          <a href="signup.html" class="btn btn-secondary">← Previous</a>
           <button type="submit" class="btn btn-primary">Sign Up</button>
         </div>
       </form>
@@ -88,7 +88,70 @@
   
  <script src="main.js" defer></script>
   
-  
+  <script>
+document
+  .getElementById("createAccountForm")
+  .addEventListener("submit", function(e) {
+
+    e.preventDefault();
+
+    const email =
+      document.querySelector('input[name="email"]').value;
+
+    const password =
+      document.querySelector('input[name="password"]').value;
+
+    const confirmPassword =
+      document.querySelector('input[name="confirm-password"]').value;
+
+
+    const termsAccepted =
+      document.querySelector('input[name="remember"]').checked;
+
+    if (!termsAccepted) {
+      alert("Please accept the Terms of Use");
+      return;
+    }
+
+    
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    // Get previous signup data
+    const signupData =
+      JSON.parse(localStorage.getItem("signupData")) || {};
+
+    // Combine all user info
+    const user = {
+      ...signupData,
+      email,
+      password
+    };
+
+    // Save final user
+    localStorage.setItem(
+      "plantcareUser",
+      JSON.stringify(user)
+    );
+
+    
+    // Save username separately for dashboard greeting
+    localStorage.setItem(
+      "userName",
+      signupData.firstname
+    );
+
+
+
+    localStorage.removeItem("signupData");
+
+
+    // Redirect to dashboard
+    window.location.href = "dashboard.html";
+});
+</script>
   
 </body>
 </html>

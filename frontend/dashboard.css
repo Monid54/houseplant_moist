@@ -1,5 +1,5 @@
 
-/* ashboard.css - Styles for the Plant Care Dashboard */
+/* Dashboard.css - Styles for the Plant Care Dashboard */
 
 body {
   margin: 0;
@@ -26,6 +26,31 @@ body {
   font-size: 14px;
   margin-top: 5px;
 }
+
+
+.meta-info {
+  font-size: 13px;
+  color: gray;
+  font-weight: 500;
+}
+
+
+.location,
+.meta-info,
+#locationInfo,
+#cardLocation,
+#headerLocation {
+
+  font-family:
+    'Poppins',
+    "Segoe UI Emoji",
+    "Apple Color Emoji",
+    "Noto Color Emoji",
+    sans-serif;
+
+}
+
+
 
 #greeting {
   color: #333;

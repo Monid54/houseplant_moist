@@ -1,0 +1,148 @@
+
+/* signup.css - Styles for the Signup Page */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+    }
+
+    .signup-page {
+      display: flex;
+      flex-wrap: wrap;
+      min-height: 100vh;
+    }
+
+    .signup-left, .signup-right {
+      flex: 1;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .signup-right {
+      background: #078311;
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+      flex-direction: column;
+    }
+
+    .signup-right .logo {
+      height: auto;
+      max-width: 300px;
+      margin-bottom: -55px;
+      margin-top: -50px;
+    }
+
+    .signup-right h4 {
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .signup-right p {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    
+  .signup-right .illustration {
+  max-width: 500px;
+  margin-top: 0px;
+  margin-bottom: -30px;
+
+  transform: translateY(40px);
+  opacity: 0;
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+/* Entrance animation */
+@keyframes slideUp {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Optional hover effect */
+.signup-right .illustration:hover {
+  transform: translateY(-5px) scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+    .signup-left {
+      background: #fff;
+      flex-direction: column;
+    }
+
+    .signup-form {
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .signup-form h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #252526c5;
+      text-align: center;
+    }
+
+.signup-form h4 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: #27a331;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+
+    .signup-form .footer-text {
+      margin-top: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .signup-form .footer-text a {
+      color: #27a331;
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .signup-page {
+        flex-direction: column ;
+      }
+
+      .signup-right,
+      .signup-left {
+        flex: 1 1 100%;
+        padding: 30px 20px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
