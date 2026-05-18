@@ -68,7 +68,7 @@
 
     <div class="plant-row">
       <span>Monstera</span>
-      <span>100% <span class="status normal">NORMAL</span></span>
+      <span>93% <span class="status normal">NORMAL</span></span>
     </div>
 
     <div class="plant-row">
@@ -90,7 +90,7 @@
     </div>
   </div>
 
-  <div class="big">100%</div>
+  <div class="big">93%</div>
     <span class="status normal">NORMAL</span>
 
     <div class="divider"></div>
@@ -113,7 +113,7 @@
   </div>
   <div>
     <p>Humidity</p>
-    <strong>100%</strong>
+    <strong>93%</strong>
   </div>
 </div>
 
@@ -204,7 +204,7 @@ function updateGreeting() {
   else if (hour < 17) timeGreeting = 'Good day';
   else timeGreeting = 'Good evening';
 
-  const name = localStorage.getItem('userName') || 'Michael';
+  const name = localStorage.getItem('userName') || '';
   document.getElementById('greeting').textContent =
     `Hello ${name}, ${timeGreeting}`;
 }
@@ -228,29 +228,44 @@ async function loadMetaInfo() {
 
   // ===== LOCATION =====
   try {
-    const res = await fetch("https://ipapi.co/json/");
+
+    const res = await fetch("https://ipapi.co/json/?token=BBAz5xY2Bny9Rq64c8m9XSArKA2lwvt9Ff0gU9rRO6jtJb4ORb");
     const data = await res.json();
 
-    const countryCode = data.country_code?.toUpperCase() || "CH";
+    const countryCode =
+    String(data.country_code || "CH").toUpperCase();
 
     const flag = countryCode
       .split('')
       .map(c => String.fromCodePoint(127397 + c.charCodeAt()))
       .join('');
 
-    const city = data.city || data.country_name;
+      
+
+
+
+    const city = data.city || "Unknown City";
     const country = data.country_name || "";
-    const fullLocation = `${flag} ${city}, ${country}`;
+    const fullLocation = `<img src="https://flagcdn.com/20x15/ch.png" 
+    style="vertical-align:middle; margin-right:6px;"> ${city}, ${country}`;
+
+
+
+      console.log(countryCode);
+      console.log(flag);
+      console.log(fullLocation);
+
+
 
     const loc1 = document.getElementById("locationInfo");
     const loc2 = document.getElementById("cardLocation");
     const loc3 = document.getElementById("headerLocation");
 
-    if (loc1) loc1.textContent = fullLocation;
-    if (loc2) loc2.textContent = fullLocation;
+    if (loc1) loc1.innerHTML = fullLocation;
+    if (loc2) loc2.innerHTML = fullLocation;
 
     //  Better version (dynamic day)
-    if (loc3) loc3.textContent = `${fullLocation} · ${day}`;
+    if (loc3) loc3.innerHTML = `${fullLocation} · ${day}`;
 
   } catch (err) {
     console.warn("Location failed, using fallback");
