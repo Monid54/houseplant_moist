@@ -1,6 +1,6 @@
 @startuml Healthy_Roots_Use_Case_Diagram
 
-title Healthy Roots @ Home – Use Case Diagram
+title Healthy Roots @ Home - Use Case Diagram
 
 skinparam actorStyle awesome
 skinparam roundcorner 8
@@ -17,13 +17,13 @@ top to bottom direction
 
 actor "Plant Owner\n(User)" as Owner #DAE8FC
 actor "ESP32-C3\nSensor Node" as ESP32 <<device>> #D5E8D4
-actor "Cron\n(nightly)" as Cron <<system>> #FFF2CC
+actor "Systemd Timer\n(nightly)" as Systemd <<system>> #FFF2CC
+actor "System\nAdministrator" as Admin <<secondary>> #F8CECC
 
 rectangle "Healthy Roots @ Home System" {
 
-
   package "Web Frontend" #DAE8FC {
-    usecase "UC8: Login / Create Account\n(UI only)" as UC8
+    usecase "UC8: Login / Create Account\n(Planned - Future)" as UC8
     usecase "UC9: View Dashboard" as UC9
     usecase "UC10: View Moisture\nChart (last 24h)" as UC10
     usecase "UC11: Check Plant\nStatus Card" as UC11
@@ -35,7 +35,7 @@ rectangle "Healthy Roots @ Home System" {
     usecase "UC3: Retry Failed\nTransmission (up to 3x)" as UC3
   }
 
-    package "Data Export & Sync" #FFF2CC {
+  package "Data Export & Sync" #FFF2CC {
     usecase "UC6: Export Data to JSON\n(latest.json + daily/)" as UC6
     usecase "UC7: Push Exports\nto GitHub" as UC7
   }
@@ -52,42 +52,37 @@ rectangle "Healthy Roots @ Home System" {
   }
 
 }
-actor "FastAPI\nBackend" as API <<system>> #FFF9C4
-actor "System\nAdministrator" as Admin <<secondary>> #F8CECC
-
-Owner   -[hidden]right-> UC9
-ESP32   -[hidden]right-> UC1
-Cron    -[hidden]right-> UC6
-API     -[hidden]bottom->  UC4
-Admin   -[hidden]bottom->  UC12
 
 ' ESP32
+ESP32 --> UC2
 ESP32 --> UC1
-ESP32 -[hidden]right-> UC3
+ESP32 --> UC3
 UC1 .> UC2 : <<include>>
-UC2 .> UC3 : <<extend>>\n(on POST failure)
+UC2 <. UC3 : <<extend>>
 UC2 .down.> UC4 : <<include>>
 
-' FastAPI Backend
-API --> UC4
-API --> UC5
+'Backend
+UC9 <.down. UC5 : <<include>>
+UC5 <.up. UC12 : <<include>>
+UC5 <.up. UC13 : <<extend>>
 
-' Cron
-Cron --> UC6
+' Systemd Timer
+Systemd --> UC6
 UC6 .> UC7 : <<include>>
 
 ' Plant Owner
+UC8 -[hidden]right-> UC9
+UC9 -[hidden]right-> UC10
+UC10 -[hidden]right-> UC11
 Owner --> UC8
 Owner --> UC9
 UC9 .> UC10 : <<include>>
 UC9 .> UC11 : <<include>>
-UC9 .> UC5  : <<include>>
 
 ' Admin
 Admin --> UC12
 Admin --> UC13
 Admin --> UC14
 UC12 .> UC13 : <<include>>
-UC14 .up.> UC4  : <<extend>>\n(affects validation)
 
 @enduml
