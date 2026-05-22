@@ -1,13 +1,13 @@
 # houseplant_moist
 Houseplant Moisture Monitor
 =============================
-
 A fully automated IoT plant monitoring system built with:
 - ESP32-C3 soil moisture sensor
 - Raspberry Pi backend (FastAPI + SQLite)
 - Automated daily JSON exports to GitHub
+- PlantCare web dashboard (HTML/CSS/JS + Chart.js)
 
-This repository contains firmware, backend code, and generated datasets.
+This repository contains firmware, backend code, frontend, and generated datasets.
 
 --------------------------------------------------
 Architecture
@@ -17,11 +17,13 @@ ESP32 Sensor -> HTTP POST -> Raspberry Pi (FastAPI)
                                SQLite
                                   |
                     Daily JSON export -> GitHub
+                                  |
+                        PlantCare Web Dashboard
 
 --------------------------------------------------
 Live Data
 --------------------------------------------------
-Latest measurements (last 14 days) in hourly buckets, and older measurements in 6-houre buckets:
+Latest measurements (last 14 days) in hourly buckets:
 exports/latest.json
 
 Daily snapshots:
@@ -32,8 +34,9 @@ These files are automatically updated every night.
 --------------------------------------------------
 Repository Structure
 --------------------------------------------------
-backend/        FastAPI backend
-esp32/          ESP32 firmware
+backend/        FastAPI backend (app.py, plant.db)
+esp32/          ESP32 firmware (sensor_1.ino)
+frontend/       PlantCare web dashboard
 scripts/        Export and automation scripts
 exports/        Generated sensor data (JSON)
 
@@ -41,7 +44,7 @@ exports/        Generated sensor data (JSON)
 Hardware
 --------------------------------------------------
 - ESP32-C3 Super Mini
-- Capacitive soil moisture sensor
+- Capacitive soil moisture sensor V2.0
 - USB powered
 
 Sampling interval: 15 minutes
@@ -49,7 +52,6 @@ Sampling interval: 15 minutes
 --------------------------------------------------
 Backend API
 --------------------------------------------------
-
 Health check
 GET /health
 
@@ -64,6 +66,9 @@ Example payload:
   "moisture": 42,
   "rssi": -55
 }
+
+All readings for a sensor
+GET /readings?sensor_id=plant1&limit=100
 
 Latest reading
 GET /latest?sensor_id=plant1
@@ -84,10 +89,10 @@ Example entry:
 Fields:
 sensor_id   Sensor identifier
 ts          ISO8601 timestamp (UTC)
-raw         Raw ADC value
-moisture    Calibrated percentage
-vcc         Supply voltage (for battery)
-rssi        WiFi signal strength
+raw         Raw ADC value (0–4095)
+moisture    Calibrated percentage (0–100)
+vcc         Supply voltage (unused, null)
+rssi        WiFi signal strength (dBm)
 
 --------------------------------------------------
 Automation
@@ -102,18 +107,18 @@ Default execution time: 02:30 CET
 --------------------------------------------------
 Security
 --------------------------------------------------
-Sensitive data excluded:
+Sensitive data excluded from repository:
 - WiFi credentials (secrets.h)
-- SQLite database
+- SQLite database (plant.db)
 - Environment files
 
 --------------------------------------------------
 Use Cases
 --------------------------------------------------
 - Plant watering alerts
-- Long-term soil monitoring
+- Long-term soil moisture monitoring
 - IoT experimentation
-- Web dashboards
+- Web dashboard visualisation
 - Data analysis of plant hydration
 
 --------------------------------------------------
@@ -128,11 +133,11 @@ Requirements:
 --------------------------------------------------
 Roadmap
 --------------------------------------------------
-- Multi-sensor support
-- Web dashboard
-- Plant health scoring
-- Cloud synchronization
-- Battery-powered nodes
+- Dynamic multi-sensor dashboard (FR-10b)
+- Backend authentication (FR-11)
+- Sensor inactivity notifications (FR-12)
+- Battery-powered nodes with deep sleep
+- Cloud synchronisation
 
 --------------------------------------------------
 License
@@ -140,6 +145,11 @@ License
 MIT (recommended for educational and open hardware projects)
 
 --------------------------------------------------
-Author
+Authors
 --------------------------------------------------
-Built as an IoT plant monitoring project using ESP32 and Raspberry Pi.
+ZHAW – Software Engineering and Design Patterns, May 2026
+
+Simon Schmid – Project Lead / Backend / Architecture
+Cédric Müller – Backend ↔ Frontend Integration
+Michael Ogar – Frontend / UI
+Alex Filo – Software Design / UML / QA
