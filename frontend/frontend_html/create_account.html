@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <title>Create Account - PlantCare</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <!-- Google Font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Main CSS -->
+  <link
+    rel="stylesheet"
+    href="../frontend_css/create_account.css"
+  />
+
+</head>
+
+<body>
+
+  <div class="auth-page">
+
+    <!-- RIGHT PANEL -->
+    <div class="auth-right">
+
+      <img
+        src="../images/plantcare.png"
+        alt="PlantCare Logo"
+        class="logo"
+      />
+
+      <h3>
+        Secure your PlantCare account
+      </h3>
+
+      <p>
+        You're unlocking access to powerful tools,
+        real-time insights, and personalized support.
+      </p>
+
+      <h4>
+        Create a secure login to monitor your
+        plant's health
+      </h4>
+
+      <img
+        src="../images/password_03.png"
+        alt="Security Illustration"
+        class="illustration"
+      />
+
+    </div>
+
+    <!-- LEFT PANEL -->
+    <div class="auth-left">
+
+      <form
+        id="createAccountForm"
+        class="auth-form"
+      >
+
+        <h2>
+          Account Security
+        </h2>
+
+        <!-- EMAIL -->
+        <div class="input-group">
+
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            required
+          />
+
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="input-group password-group">
+
+          <input
+            type="password"
+            name="password"
+            placeholder="Password*"
+            required
+          />
+
+          <span
+            class="toggle-password"
+            onclick="togglePassword(this)"
+          >
+
+            <img
+              src="https://img.icons8.com/?size=100&id=34226&format=png&color=737373"
+              alt="Toggle Password"
+            />
+
+          </span>
+
+        </div>
+
+        <!-- CONFIRM PASSWORD -->
+        <div class="input-group password-group">
+
+          <input
+            type="password"
+            name="confirm-password"
+            placeholder="Confirm Password*"
+            required
+          />
+
+          <span
+            class="toggle-password"
+            onclick="togglePassword(this)"
+          >
+
+            <img
+              src="https://img.icons8.com/?size=100&id=34226&format=png&color=737373"
+              alt="Toggle Password"
+            />
+
+          </span>
+
+        </div>
+
+        <!-- TERMS -->
+        <div class="form-options">
+
+          <label class="remember-left">
+
+            <input
+              type="checkbox"
+              name="remember"
+            />
+
+            <span>
+              I have reviewed and accepted the
+            </span>
+
+          </label>
+
+          <a
+            href="#"
+            class="forgot-link"
+          >
+            Terms of Use
+          </a>
+
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="form-actions">
+
+          <a
+            href="signup.html"
+            class="btn btn-secondary"
+          >
+            ← Previous
+          </a>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
+            Sign Up
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- CREATE ACCOUNT JS -->
+  <script
+    src="../frontend_js/create_account.js">
+  </script>
+
+</body>
+</html>
