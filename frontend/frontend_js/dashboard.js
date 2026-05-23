@@ -1,178 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>PlantCare Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-<!-- Main CSS -->
-
-<link rel="stylesheet" href="dashboard.css">
-
-</head>
-
-<body>
-
-<!-- OVERLAY -->
-<div class="overlay" id="overlay" onclick="closeMenu()"></div>
-
-<!-- SIDEBAR -->
-<div class="side-menu" id="menu">
-
-  <img src="images/plantcare.png">
-
-  <a href="#"><i class="fas fa-home"></i> Dashboard</a>
-  <a href="#"><i class="fas fa-leaf"></i> Plants</a>
-  <a href="#"><i class="fas fa-microchip"></i> Devices</a>
-  <a href="#"><i class="fas fa-chart-line"></i> Data & History</a>
-  <a href="#"><i class="fas fa-cog"></i> Settings</a>
-  <a href="#"><i class="fas fa-user"></i> Profile</a>
-
-  <a href="#" onclick="logout()" style="margin-top:45px;">
-    <i class="fas fa-sign-out-alt"></i> Logout
-  </a>
-
-</div>
-
-<!-- MAIN -->
-<div class="container" id="app">
-
-  <!-- HEADER -->
-  <div class="header">
-
-    <div>
-      <h3 id="greeting">Plantcare</h3>
-      <div class="location" id="headerLocation">-- · Today</div>
-    </div>
-
-    <div style="display:flex; align-items:center; gap:10px;">
-      <div class="toggle" onclick="toggleTheme()"></div>
-
-      <button class="hamburger" onclick="openMenu()">
-        <i class="fas fa-bars"></i>
-      </button>
-    </div>
-
-  </div>
-
-  <!-- LIST -->
-  <div class="plant-list card">
-
-    <div class="plant-row">
-      <span>Aloe Vera</span>
-      <span>65% <span class="status moderate">MODERATE</span></span>
-    </div>
-
-    <div class="plant-row">
-      <span>Monstera</span>
-      <span>93% <span class="status normal">NORMAL</span></span>
-    </div>
-
-    <div class="plant-row">
-      <span>Cactus</span>
-      <span>5% <span class="status warning">WATER ME</span></span>
-    </div>
-
-  </div>
-
-  <!-- CARD -->
-  <div class="card">
-
-  <div class="card-header">
-    <h3>Monstera</h3>
-
-    <div class="meta-info">
-      <span id="cardLocation">--</span> · 
-      <span id="cardDay">--</span>
-    </div>
-  </div>
-
-  <div class="big">93%</div>
-    <span class="status normal">NORMAL</span>
-
-    <div class="divider"></div>
-
-    <div class="grid">
-  <div>
-    <p>Day</p>
-    <strong id="dayOfWeek">--</strong>
-  </div>
-  <div>
-    <p>Location</p>
-    <strong id="locationInfo">--</strong>
-  </div>
-</div>
-
-<div class="grid" style="margin-top:10px;">
-  <div>
-    <p>Temperature</p>
-    <strong>18°C</strong>
-  </div>
-  <div>
-    <p>Humidity</p>
-    <strong>93%</strong>
-  </div>
-</div>
-
-<div class="grid" style="margin-top:10px;">
-  <div>
-  
-  </div>
-  <div>
-    
-  </div>
-</div>
-
-  </div>
-
-  <!-- GRAPH -->
- <!-- GRAPH -->
-<div class="graph card">
-
-  <!-- HEADER WITH BADGE -->
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-    <h3 class="graph-title">Soil humidity level - Last 24h</h3>
-
-    <div id="moistureBadge" style="
-      background:#e8f5e9;
-      color:#078311;
-      padding:6px 12px;
-      border-radius:20px;
-      font-weight:600;
-      font-size:14px;
-    ">
-      --%
-    </div>
-  </div>
-
-  <!-- CHART -->
-  <div style="height:250px;">
-    <canvas id="waterChart"></canvas>
-  </div>
-
-  <!-- ALERT -->
-  <p id="alertBox" style="
-    margin-top:10px;
-    font-size:13px;
-    font-weight:500;
-  "></p>
-
-  <!-- TIMESTAMP -->
-  <p style="font-size:13px; margin-top:5px;">
-    Last update: <span id="lastUpdate"></span><br>
-    Next reading: Auto
-  </p>
-
-
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
 // ===== UI FUNCTIONS =====
 function toggleTheme() {
   document.getElementById("app").classList.toggle("dark");
@@ -210,9 +35,6 @@ function updateGreeting() {
 }
 
 
-
-
-
 // ===== META INFO (DAY + LOCATION) =====
 async function loadMetaInfo() {
 
@@ -240,15 +62,12 @@ async function loadMetaInfo() {
       .map(c => String.fromCodePoint(127397 + c.charCodeAt()))
       .join('');
 
-      
-
 
 
     const city = data.city || "Unknown City";
     const country = data.country_name || "";
     const fullLocation = `<img src="https://flagcdn.com/20x15/ch.png" 
     style="vertical-align:middle; margin-right:6px;"> ${city}, ${country}`;
-
 
 
       console.log(countryCode);
@@ -284,8 +103,6 @@ async function loadMetaInfo() {
 } 
 
 
-
-
 // ===== CHART =====
 let waterChart;
 
@@ -294,7 +111,7 @@ async function loadChart() {
   if (!canvas) return;
 
   try {
-    const response = await fetch('../exports/latest.json');
+    const response = await fetch('../../exports/latest.json');
     const json = await response.json();
 
     const readings = json.readings;
@@ -424,8 +241,3 @@ window.addEventListener("load", () => {
   loadChart();
   loadMetaInfo(); //  NEW
 });
-</script>
-
-
-</body>
-</html> 
