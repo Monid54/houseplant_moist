@@ -40,6 +40,87 @@ frontend/       PlantCare web dashboard
 scripts/        Export and automation scripts
 exports/        Generated sensor data (JSON)
 
+
+### Frontend Structure
+
+```text
+frontend/
+│
+├── frontend_html/      Application pages
+│   ├── landing.html
+│   ├── login.html
+│   ├── signup.html
+│   ├── create_account.html
+│   └── dashboard.html
+│
+├── frontend_css/       Modular page styling
+│   ├── landing.css
+│   ├── login.css
+│   ├── signup.css
+│   ├── create_account.css
+│   └── dashboard.css
+│
+├── frontend_js/        Frontend functionality and logic
+│   ├── login.js
+│   ├── signup.js
+│   ├── create_account.js
+│   └── dashboard.js
+│
+└── images/             UI assets and illustrations
+```
+
+##  Frontend Source
+
+[Open Frontend Folder](https://github.com/Monid54/houseplant_moist/tree/main/frontend)
+
+---
+
+# Frontend Prototype
+
+The current frontend implementation is a prototype/mockup intended to demonstrate:
+- User interface structure
+- Authentication flow design
+- Dashboard visualization
+- Responsive mobile layout
+- Modular frontend architecture
+
+At the moment:
+- Authentication uses browser localStorage
+- Pages are not fully connected to the backend
+- Sensor data integration is partially simulated
+- Security/authentication is not production-ready
+
+The frontend will be further developed and integrated with the backend API in future iterations.
+
+---
+
+#  Running the Frontend
+
+## Option 1 — VS Code Live Server (Recommended)
+
+1. Install the **Live Server** extension in VS Code
+2. Open the repository
+3. Navigate to:
+
+```text
+frontend/frontend_html/
+```
+
+4. Right-click:
+
+```text
+landing.html
+```
+
+5. Click:
+
+```text
+Open with Live Server
+```
+
+The application will automatically open in your browser.
+
+
 --------------------------------------------------
 Hardware
 --------------------------------------------------
